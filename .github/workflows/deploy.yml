@@ -5,29 +5,29 @@ on:
       - master
 jobs:
   deploy:
-  runs-on: ubuntu-latest
-  env:
+    runs-on: ubuntu-latest
+    env:
       BUILD_FOLDER: "build/" # default build directory
       REACT_APP_VERSION: "latest"
-  steps:
-  - name: Checkout
-    uses: actions/checkout@v2
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
 
-  - name: Yarn install & build
-    uses: actions/setup-node@v2
-  - run: yarn install
-  - run: yarn publish
+    - name: Yarn install & build
+      uses: actions/setup-node@v2
+    - run: yarn install
+    - run: yarn publish
 
-  - name: Configure AWS Credentials
-    uses: aws-actions/configure-aws-credentials@v1
-    with:
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: eu-central-1
-  
-  - name: Copy files
-    env:
+
+    - name: Copy files
+      env:
         APP_DIR: "${{ secrets.BUCKET }}/${{ secrets.REACT_APP_GRAASP_DEVELOPER_ID }}/${{ secrets.REACT_APP_GRAASP_APP_ID }}/$REACT_APP_VERSION/"
         # make sure you do not use the word PATH as a variable because it overrides the PATH environment variable 
         APP_PATH: "${{ secrets.REACT_APP_GRAASP_DEVELOPER_ID }}/${{ secrets.REACT_APP_GRAASP_APP_ID }}/$REACT_APP_VERSION"
-    run: aws s3 sync $BUILD_FOLDER s3://$APP_DIR --delete
+      run: aws s3 sync $BUILD_FOLDER s3://$APP_DIR --delete
